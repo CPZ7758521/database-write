@@ -1,11 +1,9 @@
 package com.pandora;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 
 public class Write_mariadb_on_update {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
         //定义链接
         Connection conn = null;
         //定义预编译sql
@@ -27,5 +25,44 @@ public class Write_mariadb_on_update {
         String querySql = "insert into test.a (age,name,sex) values (?,?,?) on duplicate key update age = ?, name = ?, sex = ?";
 
 
+//        String url = "jdbc:mariadb://10.89.79.63:12121";
+        String url = "jdbc:mysql://10.89.79.63:12121";
+        String username = "root";
+        String password = "root";
+
+        conn = getConn(url, username, password);
+        Statement statement = conn.createStatement();
+
+        statement.executeUpdate(dropSql);
+        statement.executeUpdate(createSql);
+
+        String[][] arrs = {{"7","zs","man"},{"8","ls","man"},{"2","ww","man"},{"3","zl","man"}};
+        ps = conn.prepareStatement(querySql);
+
+        for (String[] arr : arrs) {
+            ps.setInt(1, Integer.parseInt(arr[0]));
+            ps.setString(2, arr[1]);
+            ps.setString(3, arr[2]);
+            ps.setInt(4, Integer.parseInt(arr[0]));
+            ps.setString(5, arr[1]);
+            ps.setString(6, arr[2]);
+
+            int i = ps.executeUpdate();
+            if (i > 0) {
+
+            }
+        }
+
+    }
+
+    public static Connection getConn(String url, String username, String password) throws ClassNotFoundException, SQLException {
+//        Class.forName("org.mariadb.jdbc.Driver");
+        Class.forName("org.mysql.cj.jdbc.Driver");
+        Connection connection = DriverManager.getConnection(url, username, password);
+        return connection;
+    }
+
+    public static boolean checkConnValid(Connection conn, int timeout) throws SQLException {
+        return conn.isValid(timeout);
     }
 }
