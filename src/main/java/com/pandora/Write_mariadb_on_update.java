@@ -1,9 +1,10 @@
 package com.pandora;
 
 import java.sql.*;
+import java.util.Arrays;
 
 public class Write_mariadb_on_update {
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, InterruptedException {
         //定义链接
         Connection conn = null;
         //定义预编译sql
@@ -49,14 +50,20 @@ public class Write_mariadb_on_update {
 
             int i = ps.executeUpdate();
             if (i > 0) {
-
+                System.out.println(Arrays.asList(arr) + "--》数据插入成功《--");
+                System.out.println("等待10秒......");
+                Thread.sleep(10000L);
             }
         }
 
+        statement.close();
+        ps.close();
+        conn.close();
     }
 
     public static Connection getConn(String url, String username, String password) throws ClassNotFoundException, SQLException {
-//        Class.forName("org.mariadb.jdbc.Driver");
+        // 要想用jdbc，需要先加载 jdbc 的类，把要用的类加载进来，com.mysql.cj.jdbc.Driver
+        //        Class.forName("org.mariadb.jdbc.Driver");
         Class.forName("org.mysql.cj.jdbc.Driver");
         Connection connection = DriverManager.getConnection(url, username, password);
         return connection;
