@@ -23,7 +23,11 @@ public class Write_mariadb_on_update {
                 "unique key (name)\n" +
                 ") ENGIN=InnoDB CHARSET=utf-8";
 
-        String querySql = "insert into test.a (age,name,sex) values (?,?,?) on duplicate key update age = ?, name = ?, sex = ?";
+        String insertSql = "insert into test.a (age,name,sex) values (?,?,?) on duplicate key update age = ?, name = ?, sex = ?";
+        String querySql =
+                "SELECT * FROM employees; " +
+                        "UPDATE departments SET name = 'New Department Name' WHERE id = 1; " +
+                        "SELECT * FROM employees;";
 
 
 //        String url = "jdbc:mariadb://10.89.79.63:12121";
@@ -37,8 +41,16 @@ public class Write_mariadb_on_update {
         statement.executeUpdate(dropSql);
         statement.executeUpdate(createSql);
 
+        //statement or preparedStatement 执行execute，返回多个结果集的时候。
+        boolean execute = statement.execute(querySql);
+        boolean moreResults = statement.getMoreResults();
+
+        PreparedStatement ps1 = conn.prepareStatement(querySql);
+        boolean execute1 = ps1.execute();
+        boolean moreResults1 = ps1.getMoreResults();
+
         String[][] arrs = {{"7","zs","man"},{"8","ls","man"},{"2","ww","man"},{"3","zl","man"}};
-        ps = conn.prepareStatement(querySql);
+        ps = conn.prepareStatement(insertSql);
 
         for (String[] arr : arrs) {
             ps.setInt(1, Integer.parseInt(arr[0]));
